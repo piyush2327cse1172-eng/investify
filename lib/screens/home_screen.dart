@@ -45,7 +45,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   _loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      _userName = prefs.getString('userName') ?? 'User';
+      _userName = prefs.getString('userName') ?? 'Anand';
       _monthlyBudget = prefs.getString('monthlyBudget') ?? '10000';
     });
   }
@@ -1412,7 +1412,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           const SizedBox(height: 16),
           _buildFeatureCard(
             '1. Transaction Capture',
-            'Automatically detect UPI payments and calculate round-ups. ₹24 → ₹30 (₹6 invested)',
+            'Automatically detect UPI payments and calculate round-ups. ₹24 → ₹25 (₹1 invested)',
             Icons.receipt_long,
             Colors.blue,
           ),
@@ -1648,7 +1648,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           const SizedBox(height: 12),
           _buildFAQItem(
             'How does round-up investment work?',
-            'When you spend ₹24, we round it up to ₹30 and invest the ₹6 difference automatically.',
+            'When you spend ₹24, we round it up to ₹25 and invest the ₹1 difference automatically.',
           ),
           _buildFAQItem(
             'Is my money safe?',
@@ -1903,7 +1903,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   ),
                   _buildNotificationItem(
                     'Round-up Success',
-                    'Your ₹24 chai purchase was rounded up to ₹30. ₹6 invested automatically!',
+                    'Your ₹24 chai purchase was rounded up to ₹25. ₹1 invested automatically!',
                     Icons.coffee,
                     Colors.blue,
                     '3 days ago',

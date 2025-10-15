@@ -18,8 +18,8 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
   final List<String> _categories = ['Food', 'Transport', 'Entertainment', 'Shopping', 'Bills'];
 
   double _calculateRoundUp(double amount) {
-    // Round up to next multiple of 10 (like ₹64 → ₹70)
-    final roundedUp = ((amount / 10).ceil() * 10).toDouble();
+    // Round up to next multiple of 5 (like ₹64 → ₹65)
+    final roundedUp = ((amount / 5).ceil() * 5).toDouble();
     return roundedUp - amount;
   }
 
@@ -53,7 +53,7 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
                 labelText: 'Amount (₹)',
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.currency_rupee),
-                helperText: 'e.g., ₹64 will be rounded to ₹70 (₹6 invested)',
+                helperText: 'e.g., ₹64 will be rounded to ₹65 (₹1 invested)',
               ),
               onChanged: (value) {
                 setState(() {}); // Trigger rebuild to show round-up preview

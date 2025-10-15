@@ -365,7 +365,7 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool('isLoggedIn', true);
       await prefs.setBool('isNewUser', false);
-      await prefs.setString('userName', 'Demo User');
+      await prefs.setString('userName', 'Anand');
       await prefs.setString('monthlyBudget', '25000');
       
       Navigator.pushReplacement(
@@ -411,7 +411,7 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('isLoggedIn', true);
     await prefs.setBool('isNewUser', false);
-    await prefs.setString('userName', 'Google User');
+    await prefs.setString('userName', 'Anand');
     await prefs.setString('monthlyBudget', '30000');
     
     Navigator.pushReplacement(
