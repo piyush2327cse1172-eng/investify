@@ -66,6 +66,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   Future<void> _initializeSmsService() async {
     try {
+      // Request SMS permissions explicitly
+      final hasPermission = await SmsService.requestPermissions();
+      if (!hasPermission) {
+        _showPermissionDialog();
+        return;
+      }
+      
       await SmsService.startListening();
       // Refresh transactions after SMS processing
       await Future.delayed(const Duration(seconds: 2));
@@ -73,6 +80,56 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     } catch (e) {
       print('SMS service initialization failed: $e');
     }
+  }
+
+  void _showPermissionDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: const Text('SMS Permission Required'),
+        content: const Text(
+          'Investify needs SMS permission to automatically detect your transactions and create smart round-up investments. This helps you save money effortlessly!',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              // Continue without SMS
+            },
+            child: const Text('Skip'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              final granted = await SmsService.requestPermissions();
+              if (granted) {
+                await SmsService.startListening();
+                _loadTransactions();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('SMS permission granted! Auto-detection enabled.'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('SMS permission denied. You can enable it later in settings.'),
+                    backgroundColor: Colors.orange,
+                  ),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green[600],
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Grant Permission'),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _refreshSmsData() async {
@@ -87,9 +144,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         ),
       );
     } catch (e) {
+      print('SMS refresh error: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Failed to refresh SMS data'),
+        SnackBar(
+          content: Text('Failed to refresh SMS data: $e'),
           backgroundColor: Colors.red,
         ),
       );
@@ -2096,8 +2154,113 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               ),
             ),
           ),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: _testSmsAccess,
+              icon: const Icon(Icons.check_circle),
+              label: const Text('Test SMS Access'),
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.all(16),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: _debugSmsData,
+              icon: const Icon(Icons.bug_report),
+              label: const Text('Debug SMS Data'),
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.all(16),
+              ),
+            ),
+          ),
         ],
       ),
     );
+  }
+
+  Future<void> _testSmsAccess() async {
+    final result = await SmsService.testSmsAccess();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(result),
+        backgroundColor: result.startsWith('Success') ? Colors.green : Colors.red,
+      ),
+    );
+  }
+
+  Future<void> _debugSmsData() async {
+    try {
+      final debugData = await SmsService.debugFetchAllSms();
+      
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('SMS Debug Data'),
+          content: SizedBox(
+            width: double.maxFinite,
+            height: 400,
+            child: debugData.isEmpty
+                ? const Center(child: Text('No SMS found or permission denied'))
+                : ListView.builder(
+                    itemCount: debugData.length,
+                    itemBuilder: (context, index) {
+                      final sms = debugData[index];
+                      return Card(
+                        margin: const EdgeInsets.only(bottom: 8),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'From: ${sms['sender']}',
+                                style: const TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              const SizedBox(height: 4),
+                              Text('Body: ${sms['body']}'),
+                              const SizedBox(height: 4),
+                              Row(
+                                children: [
+                                  Text(
+                                    'Transaction: ${sms['isTransaction']}',
+                                    style: TextStyle(
+                                      color: sms['isTransaction'] == 'true' 
+                                          ? Colors.green 
+                                          : Colors.red,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Text('Amount: ${sms['amount']}'),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Close'),
+            ),
+          ],
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Debug failed: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 }

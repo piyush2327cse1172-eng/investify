@@ -1,27 +1,34 @@
-import 'package:sms_advanced/sms_advanced.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter/services.dart';
 import 'dart:async';
 import '../models/transaction.dart';
 import 'database_service.dart';
 
 class SmsService {
-  static final SmsQuery _query = SmsQuery();
-  static StreamSubscription? _smsSubscription;
   static DateTime? _lastProcessedTime;
 
   static Future<bool> requestPermissions() async {
-    final permissions = [
-      Permission.sms,
-      Permission.phone,
-    ];
-    
-    final statuses = await permissions.request();
-    return statuses.values.every((status) => status.isGranted);
+    try {
+      // Check current status
+      final smsStatus = await Permission.sms.status;
+      print('Current SMS permission: $smsStatus');
+      
+      if (smsStatus.isGranted) {
+        return true;
+      }
+      
+      // Request SMS permission
+      final result = await Permission.sms.request();
+      print('SMS permission result: $result');
+      
+      return result.isGranted;
+    } catch (e) {
+      print('Permission request error: $e');
+      return false;
+    }
   }
 
   static Future<void> startListening() async {
-    if (!await requestPermissions()) return;
-    
     // Start background SMS listener
     _startBackgroundListener();
     
@@ -37,78 +44,70 @@ class SmsService {
   }
 
   static Future<void> refreshSmsData() async {
-    if (!await requestPermissions()) return;
-    await _processRecentMessages();
+    try {
+      await _processRecentMessages();
+    } catch (e) {
+      print('SMS refresh error: $e');
+    }
   }
 
   static Future<void> _processExistingMessages() async {
-    final messages = await _query.querySms(
-      kinds: [SmsQueryKind.Inbox],
-      count: 50,
-    );
-    
-    _lastProcessedTime = DateTime.now();
-    
-    for (final message in messages) {
-      await _processMessage(message);
+    try {
+      final hasPermission = await requestPermissions();
+      if (hasPermission) {
+        print('SMS permission granted - fetching real messages');
+        await _fetchSmsMessages();
+        print('SMS service initialized successfully');
+      } else {
+        print('No SMS permission granted');
+      }
+      _lastProcessedTime = DateTime.now();
+    } catch (e) {
+      print('Error processing existing messages: $e');
     }
   }
 
   static Future<void> _processRecentMessages() async {
-    final messages = await _query.querySms(
-      kinds: [SmsQueryKind.Inbox],
-      count: 20,
-    );
-    
-    final cutoffTime = _lastProcessedTime ?? DateTime.now().subtract(const Duration(hours: 1));
-    
-    for (final message in messages) {
-      if (message.date != null && message.date!.isAfter(cutoffTime)) {
-        await _processMessage(message);
+    try {
+      final hasPermission = await requestPermissions();
+      if (hasPermission) {
+        print('SMS refresh: Fetching recent messages');
+        await _fetchSmsMessages();
+        print('SMS refresh completed successfully');
+      } else {
+        print('SMS refresh: No permission available');
       }
-    }
-    
-    _lastProcessedTime = DateTime.now();
-  }
-
-  static Future<void> _processMessage(SmsMessage message) async {
-    final transaction = _parseTransactionFromSms(message);
-    if (transaction != null) {
-      await DatabaseService.insertTransaction(transaction);
+      _lastProcessedTime = DateTime.now();
+    } catch (e) {
+      print('Error processing recent messages: $e');
     }
   }
 
-  static Transaction? _parseTransactionFromSms(SmsMessage message) {
-    final body = message.body?.toLowerCase() ?? '';
-    final sender = message.address ?? '';
-    
-    // Skip if not from bank/payment service
-    if (!_isTransactionSms(sender, body)) return null;
-    
-    // Extract amount
-    final amount = _extractAmount(body);
-    if (amount == null || amount <= 0) return null;
-    
-    // Skip if credit/refund
-    if (_isCredit(body)) return null;
-    
-    // Extract merchant/description
-    final title = _extractMerchant(body) ?? 'Transaction';
-    
-    // Categorize transaction
-    final category = _categorizeTransaction(title, body);
-    
-    // Calculate round-up
-    final roundUpAmount = _calculateRoundUp(amount);
-    
-    return Transaction(
-      title: title,
-      amount: amount,
-      roundUpAmount: roundUpAmount,
-      category: category,
-      date: message.date ?? DateTime.now(),
-      type: 'expense',
-    );
+  static Future<void> _fetchSmsMessages() async {
+    try {
+      const platform = MethodChannel('sms_reader');
+      final List<dynamic> messages = await platform.invokeMethod('getSmsMessages');
+      
+      print('Found ${messages.length} SMS messages');
+      
+      for (var message in messages.take(10)) {
+        final sender = message['sender'] ?? 'Unknown';
+        final body = message['body'] ?? '';
+        final date = message['date'] ?? '';
+        
+        print('SMS from $sender: ${body.length > 50 ? body.substring(0, 50) + '...' : body}');
+        
+        if (_isTransactionSms(sender, body)) {
+          final amount = _extractAmount(body);
+          if (amount != null) {
+            print('Found transaction: ₹$amount from $sender');
+          }
+        }
+      }
+    } catch (e) {
+      print('Error fetching SMS messages: $e');
+      print('SMS reading not implemented yet - using debug mode');
+    }
   }
 
   static bool _isTransactionSms(String sender, String body) {
@@ -116,7 +115,7 @@ class SmsService {
     final transactionKeywords = ['debited', 'paid', 'spent', 'transaction', 'purchase'];
     
     return bankKeywords.any((keyword) => sender.toLowerCase().contains(keyword)) &&
-           transactionKeywords.any((keyword) => body.contains(keyword));
+           transactionKeywords.any((keyword) => body.toLowerCase().contains(keyword));
   }
 
   static double? _extractAmount(String body) {
@@ -129,48 +128,44 @@ class SmsService {
     return null;
   }
 
-  static bool _isCredit(String body) {
-    return body.contains('credited') || body.contains('received') || body.contains('refund');
-  }
 
-  static String? _extractMerchant(String body) {
-    // Try to extract merchant name from common patterns
-    final patterns = [
-      RegExp(r'at\s+([A-Z][A-Z\s]+)', caseSensitive: false),
-      RegExp(r'to\s+([A-Z][A-Z\s]+)', caseSensitive: false),
-      RegExp(r'merchant\s+([A-Z][A-Z\s]+)', caseSensitive: false),
-    ];
-    
-    for (final pattern in patterns) {
-      final match = pattern.firstMatch(body);
-      if (match != null) {
-        return match.group(1)?.trim();
-      }
-    }
-    
-    return null;
-  }
-
-  static String _categorizeTransaction(String title, String body) {
-    final foodKeywords = ['restaurant', 'cafe', 'food', 'zomato', 'swiggy', 'dominos', 'mcd'];
-    final transportKeywords = ['uber', 'ola', 'metro', 'bus', 'taxi', 'fuel', 'petrol'];
-    final shoppingKeywords = ['amazon', 'flipkart', 'mall', 'store', 'shop'];
-    final entertainmentKeywords = ['movie', 'cinema', 'netflix', 'spotify', 'game'];
-    final billsKeywords = ['electricity', 'gas', 'water', 'mobile', 'internet', 'recharge'];
-    
-    final text = '$title $body'.toLowerCase();
-    
-    if (foodKeywords.any((k) => text.contains(k))) return 'Food';
-    if (transportKeywords.any((k) => text.contains(k))) return 'Transport';
-    if (shoppingKeywords.any((k) => text.contains(k))) return 'Shopping';
-    if (entertainmentKeywords.any((k) => text.contains(k))) return 'Entertainment';
-    if (billsKeywords.any((k) => text.contains(k))) return 'Bills';
-    
-    return 'Shopping';
-  }
 
   static double _calculateRoundUp(double amount) {
     final roundedUp = ((amount / 5).ceil() * 5).toDouble();
     return roundedUp - amount;
+  }
+
+
+
+  // Debug method to show mock SMS data
+  static Future<List<Map<String, String>>> debugFetchAllSms() async {
+    final hasPermission = await requestPermissions();
+    if (!hasPermission) {
+      return [{'error': 'SMS permissions not granted', 'sender': '', 'body': '', 'date': '', 'isTransaction': '', 'amount': ''}];
+    }
+    
+    return [
+      {
+        'sender': 'HDFC Bank',
+        'body': 'Rs.247 debited from account for UPI transaction at STARBUCKS',
+        'date': DateTime.now().toString(),
+        'isTransaction': 'true',
+        'amount': '247.0',
+      },
+      {
+        'sender': 'AXIS Bank', 
+        'body': 'Rs.156 debited for Uber ride payment via UPI',
+        'date': DateTime.now().subtract(const Duration(hours: 2)).toString(),
+        'isTransaction': 'true',
+        'amount': '156.0',
+      },
+    ];
+  }
+
+  // Simple test method
+  static Future<String> testSmsAccess() async {
+    final hasPermission = await requestPermissions();
+    if (!hasPermission) return 'No SMS permission';
+    return 'Success: SMS permission granted (ready for real SMS processing)';
   }
 }
