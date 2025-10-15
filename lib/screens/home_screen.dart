@@ -5,6 +5,7 @@ import 'package:fl_chart/fl_chart.dart';
 import '../models/transaction.dart';
 import '../services/database_service.dart';
 import '../services/investment_service.dart';
+import '../services/sms_service.dart';
 import '../widgets/transaction_card.dart';
 import '../widgets/add_transaction_dialog.dart';
 
@@ -33,6 +34,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
     _loadUserData();
     _loadTransactions();
+    _initializeSmsService();
     _animationController.forward();
   }
 
@@ -62,6 +64,38 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     });
   }
 
+  Future<void> _initializeSmsService() async {
+    try {
+      await SmsService.startListening();
+      // Refresh transactions after SMS processing
+      await Future.delayed(const Duration(seconds: 2));
+      _loadTransactions();
+    } catch (e) {
+      print('SMS service initialization failed: $e');
+    }
+  }
+
+  Future<void> _refreshSmsData() async {
+    try {
+      await SmsService.refreshSmsData();
+      await _loadTransactions();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('SMS data refreshed!'),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 2),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to refresh SMS data'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -81,6 +115,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: _refreshSmsData,
+          ),
           IconButton(
             icon: const Icon(Icons.delete_sweep),
             onPressed: _resetAllTransactions,
@@ -181,6 +219,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 _buildDrawerItem(Icons.dashboard, 'Dashboard', 1),
                 _buildDrawerItem(Icons.money, 'Expenses', 2),
                 _buildDrawerItem(Icons.trending_up, 'Invest', 3),
+                _buildDrawerItem(Icons.sms, 'SMS Auto-Detect', 6),
                 _buildDrawerItem(Icons.info, 'About', 4),
                 _buildDrawerItem(Icons.contact_mail, 'Contact', 5),
                 const Divider(),
@@ -247,6 +286,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         return _buildAboutUs();
       case 5:
         return _buildContactUs();
+      case 6:
+        return _buildSmsSettings();
       default:
         return _buildHomePage();
     }
@@ -1973,6 +2014,86 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   style: TextStyle(color: Colors.grey[500], fontSize: 10),
                 ),
               ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSmsSettings() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'SMS Auto-Detection',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 20),
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.blue[600]!, Colors.blue[400]!],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: const Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Automatic Transaction Detection',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  'We automatically read your SMS messages to detect UPI and bank transactions, then create investment round-ups.',
+                  style: TextStyle(color: Colors.white70),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+          _buildFeatureCard(
+            'How it Works',
+            '1. App reads SMS from banks/UPI apps\n2. Extracts transaction amount and merchant\n3. Automatically rounds up to nearest ₹5\n4. Invests the difference',
+            Icons.auto_awesome,
+            Colors.green,
+          ),
+          const SizedBox(height: 16),
+          _buildFeatureCard(
+            'Privacy & Security',
+            'SMS data is processed locally on your device. No messages are sent to external servers. Only transaction amounts are used.',
+            Icons.security,
+            Colors.orange,
+          ),
+          const SizedBox(height: 16),
+          _buildFeatureCard(
+            'Supported Banks',
+            'Works with all major banks: SBI, HDFC, ICICI, Axis, and UPI apps like GPay, PhonePe, Paytm, BHIM.',
+            Icons.account_balance,
+            Colors.purple,
+          ),
+          const SizedBox(height: 20),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: _refreshSmsData,
+              icon: const Icon(Icons.refresh),
+              label: const Text('Refresh SMS Detection'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green[600],
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.all(16),
+              ),
             ),
           ),
         ],

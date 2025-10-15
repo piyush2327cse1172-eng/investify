@@ -113,14 +113,7 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
                     child: const Text('Cancel'),
                   ),
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: _resetFields,
-                    child: const Text('Reset'),
-                  ),
-                ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 16),
                 Expanded(
                   child: ElevatedButton(
                     onPressed: _addTransaction,
@@ -137,14 +130,6 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
         ),
       ),
     );
-  }
-
-  void _resetFields() {
-    setState(() {
-      _titleController.clear();
-      _amountController.clear();
-      _selectedCategory = 'Food';
-    });
   }
 
   _addTransaction() async {
