@@ -364,6 +364,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             const SizedBox(height: 20),
             _buildStatsCards(),
             const SizedBox(height: 20),
+            _buildCategoryBreakdown(),
+            const SizedBox(height: 20),
             _buildRecentTransactions(),
           ],
         ),
@@ -774,19 +776,52 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               ),
             )
           else
-            ...categoryTotals.entries.map((entry) {
-              final percentage = (entry.value / _totalExpenditure * 100);
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Column(
+              children: [
+                SizedBox(
+                  height: 200,
+                  child: PieChart(
+                    PieChartData(
+                      sections: categoryTotals.entries.map((entry) {
+                        final percentage = (entry.value / _totalExpenditure * 100);
+                        return PieChartSectionData(
+                          color: _getCategoryColor(entry.key),
+                          value: entry.value,
+                          title: '${percentage.toStringAsFixed(1)}%',
+                          radius: 60,
+                          titleStyle: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        );
+                      }).toList(),
+                      centerSpaceRadius: 40,
+                      sectionsSpace: 2,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                ...categoryTotals.entries.map((entry) {
+                  final percentage = (entry.value / _totalExpenditure * 100);
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Row(
                       children: [
-                        Text(
-                          entry.key,
-                          style: const TextStyle(fontWeight: FontWeight.w500),
+                        Container(
+                          width: 16,
+                          height: 16,
+                          decoration: BoxDecoration(
+                            color: _getCategoryColor(entry.key),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            entry.key,
+                            style: const TextStyle(fontWeight: FontWeight.w500),
+                          ),
                         ),
                         Text(
                           '₹${entry.value.toStringAsFixed(0)} (${percentage.toStringAsFixed(1)}%)',
@@ -794,18 +829,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 4),
-                    LinearProgressIndicator(
-                      value: percentage / 100,
-                      backgroundColor: Colors.grey[200],
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        _getCategoryColor(entry.key),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            }).toList(),
+                  );
+                }).toList(),
+              ],
+            ),
         ],
       ),
     );
