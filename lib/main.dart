@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'screens/home_screen.dart';
+import 'theme/app_theme.dart';
 
 void main() {
   runApp(const InvestifyApp());
@@ -13,12 +14,34 @@ class InvestifyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Investify',
+      title: 'Gud-luck',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.blue,
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: AppColors.primary,
+          brightness: Brightness.light,
+        ),
+        scaffoldBackgroundColor: AppColors.background,
+        fontFamily: 'SF Pro Display',
+        textTheme: const TextTheme(
+          headlineLarge: TextStyle(fontWeight: FontWeight.w700, letterSpacing: -0.5),
+          headlineMedium: TextStyle(fontWeight: FontWeight.w600, letterSpacing: -0.3),
+          titleLarge: TextStyle(fontWeight: FontWeight.w600),
+          bodyLarge: TextStyle(fontWeight: FontWeight.w400),
+        ),
+        cardTheme: const CardThemeData(
+          elevation: 0,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
+          color: Colors.white,
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            elevation: 0,
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+        ),
       ),
       home: const LoadingScreen(),
       routes: {
@@ -90,9 +113,9 @@ class _LoadingScreenState extends State<LoadingScreen> with TickerProviderStateM
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.blue[600]!, Colors.blue[400]!],
+            colors: AppColors.primaryGradient,
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -109,45 +132,77 @@ class _LoadingScreenState extends State<LoadingScreen> with TickerProviderStateM
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(20),
+                        width: 120,
+                        height: 120,
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(20),
+                          color: Colors.white.withOpacity(0.1),
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.2),
+                            width: 2,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 32,
+                              offset: const Offset(0, 16),
+                            ),
+                          ],
                         ),
-                        child: const Icon(
-                          Icons.account_balance_wallet,
-                          size: 80,
-                          color: Colors.white,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: LinearGradient(
+                              colors: [
+                                Colors.white.withOpacity(0.2),
+                                Colors.white.withOpacity(0.05),
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                          ),
+                          child: const Icon(
+                            Icons.savings_rounded,
+                            size: 60,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
-                      const SizedBox(height: 30),
+                      const SizedBox(height: 40),
                       AnimatedTextKit(
                         animatedTexts: [
                           TypewriterAnimatedText(
-                            'Investify',
+                            'Gud-luck',
                             textStyle: const TextStyle(
-                              fontSize: 36,
+                              fontSize: 42,
                               color: Colors.white,
-                              fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 2,
                             ),
-                            speed: const Duration(milliseconds: 200),
+                            speed: const Duration(milliseconds: 150),
                           ),
                         ],
                         totalRepeatCount: 1,
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 15),
                       const Text(
                         'Smart Micro Savings',
                         style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.white70,
-                          fontWeight: FontWeight.w300,
+                          fontSize: 18,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w400,
+                          letterSpacing: 1,
                         ),
                       ),
-                      const SizedBox(height: 50),
-                      const CircularProgressIndicator(
-                        color: Colors.white,
-                        strokeWidth: 2,
+                      const SizedBox(height: 60),
+                      Container(
+                        width: 40,
+                        height: 40,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 3,
+                          backgroundColor: Colors.white.withOpacity(0.2),
+                        ),
                       ),
                     ],
                   ),
@@ -196,9 +251,9 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.blue[50]!, Colors.white],
+            colors: [AppColors.background, Color(0xFFEEF2FF)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -219,24 +274,62 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
                         children: [
                         const SizedBox(height: 60),
                         Container(
-                          padding: const EdgeInsets.all(20),
+                          width: 100,
+                          height: 100,
                           decoration: BoxDecoration(
-                            color: Colors.blue[600],
-                            borderRadius: BorderRadius.circular(20),
+                            gradient: const LinearGradient(
+                              colors: AppColors.primaryGradient,
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius: BorderRadius.circular(28),
+                            boxShadow: [
+                              ...AppShadows.colored(AppColors.primary),
+                              BoxShadow(
+                                color: Colors.white.withOpacity(0.8),
+                                blurRadius: 1,
+                                offset: const Offset(0, -1),
+                              ),
+                            ],
                           ),
-                          child: const Icon(
-                            Icons.account_balance_wallet,
-                            size: 60,
-                            color: Colors.white,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(28),
+                              gradient: LinearGradient(
+                                colors: [
+                                  Colors.white.withOpacity(0.1),
+                                  Colors.transparent,
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                            ),
+                            child: const Icon(
+                              Icons.savings_rounded,
+                              size: 50,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                         const SizedBox(height: 30),
                         const Text(
-                          'Welcome to Investify',
+                          'Welcome to Gud-luck',
                           style: TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
+                            fontSize: 32,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF1E293B),
+                            letterSpacing: -0.5,
+                            height: 1.2,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Smart micro-savings for your future',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.grey[600],
+                            letterSpacing: 0.2,
                           ),
                         ),
                         const SizedBox(height: 10),
