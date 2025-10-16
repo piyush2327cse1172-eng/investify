@@ -9,6 +9,7 @@ import '../services/sms_service.dart';
 import '../widgets/transaction_card.dart';
 import '../widgets/add_transaction_dialog.dart';
 import '../widgets/glass_card.dart';
+import '../widgets/animated_widgets.dart';
 import '../theme/app_theme.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -557,20 +558,28 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     return Row(
       children: [
         Expanded(
-          child: StatCard(
-            title: 'Expenditure',
-            value: '₹${_totalExpenditure.toStringAsFixed(0)}',
-            icon: Icons.money_off_rounded,
-            color: AppColors.error,
+          child: SlideInAnimation(
+            delay: const Duration(milliseconds: 200),
+            begin: const Offset(-50, 0),
+            child: StatCard(
+              title: 'Expenditure',
+              value: '₹${_totalExpenditure.toStringAsFixed(0)}',
+              icon: Icons.money_off_rounded,
+              color: AppColors.error,
+            ),
           ),
         ),
         const SizedBox(width: 16),
         Expanded(
-          child: StatCard(
-            title: 'Savings',
-            value: '₹${_totalSavings.toStringAsFixed(0)}',
-            icon: Icons.trending_up_rounded,
-            color: AppColors.success,
+          child: SlideInAnimation(
+            delay: const Duration(milliseconds: 400),
+            begin: const Offset(50, 0),
+            child: StatCard(
+              title: 'Savings',
+              value: '₹${_totalSavings.toStringAsFixed(0)}',
+              icon: Icons.trending_up_rounded,
+              color: AppColors.success,
+            ),
           ),
         ),
       ],

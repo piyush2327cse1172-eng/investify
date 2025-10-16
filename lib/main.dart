@@ -1,12 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'dart:math' as math;
 import 'screens/home_screen.dart';
 import 'theme/app_theme.dart';
+import 'widgets/animated_widgets.dart';
 
 void main() {
   runApp(const InvestifyApp());
 }
+
+class DottedCirclePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white.withOpacity(0.4)
+      ..strokeWidth = 3
+      ..style = PaintingStyle.stroke;
+    
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = size.width / 2;
+    
+    for (int i = 0; i < 12; i++) {
+      final angle = (i * 30) * (3.14159 / 180);
+      final x = center.dx + radius * 0.9 * cos(angle);
+      final y = center.dy + radius * 0.9 * sin(angle);
+      canvas.drawCircle(Offset(x, y), 2, paint);
+    }
+  }
+  
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+double cos(double radians) => math.cos(radians);
+double sin(double radians) => math.sin(radians);
 
 class InvestifyApp extends StatelessWidget {
   const InvestifyApp({super.key});
@@ -61,32 +89,36 @@ class LoadingScreen extends StatefulWidget {
 
 class _LoadingScreenState extends State<LoadingScreen> with TickerProviderStateMixin {
   late AnimationController _controller;
+  late AnimationController _rotationController;
+  late AnimationController _pulseController;
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
+  late Animation<double> _rotationAnimation;
+  late Animation<double> _pulseAnimation;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      duration: const Duration(seconds: 2),
-      vsync: this,
-    );
+    _controller = AnimationController(duration: const Duration(seconds: 2), vsync: this);
+    _rotationController = AnimationController(duration: const Duration(seconds: 3), vsync: this);
+    _pulseController = AnimationController(duration: const Duration(milliseconds: 1500), vsync: this);
     
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
-    );
-    
-    _scaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.elasticOut),
-    );
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
+    _scaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(CurvedAnimation(parent: _controller, curve: Curves.elasticOut));
+    _rotationAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(_rotationController);
+    _pulseAnimation = Tween<double>(begin: 0.8, end: 1.2).animate(CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut));
     
     _controller.forward();
+    _rotationController.repeat();
+    _pulseController.repeat(reverse: true);
     _checkUserStatus();
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _rotationController.dispose();
+    _pulseController.dispose();
     super.dispose();
   }
 
@@ -120,7 +152,13 @@ class _LoadingScreenState extends State<LoadingScreen> with TickerProviderStateM
             end: Alignment.bottomRight,
           ),
         ),
-        child: Center(
+        child: Stack(
+          children: [
+            const FloatingParticles(
+              particleCount: 15,
+              color: Colors.white,
+            ),
+            Center(
           child: AnimatedBuilder(
             animation: _controller,
             builder: (context, child) {
@@ -131,42 +169,77 @@ class _LoadingScreenState extends State<LoadingScreen> with TickerProviderStateM
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Container(
-                        width: 120,
-                        height: 120,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.1),
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.2),
-                            width: 2,
+                      Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          AnimatedBuilder(
+                            animation: _rotationAnimation,
+                            builder: (context, child) {
+                              return Transform.rotate(
+                                angle: _rotationAnimation.value * 6.28,
+                                child: Container(
+                                  width: 140,
+                                  height: 140,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: Colors.white.withOpacity(0.3),
+                                      width: 2,
+                                    ),
+                                  ),
+                                  child: CustomPaint(
+                                    painter: DottedCirclePainter(),
+                                  ),
+                                ),
+                              );
+                            },
                           ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 32,
-                              offset: const Offset(0, 16),
-                            ),
-                          ],
-                        ),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            gradient: LinearGradient(
-                              colors: [
-                                Colors.white.withOpacity(0.2),
-                                Colors.white.withOpacity(0.05),
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
+                          AnimatedBuilder(
+                            animation: _pulseAnimation,
+                            builder: (context, child) {
+                              return Transform.scale(
+                                scale: _pulseAnimation.value,
+                                child: Container(
+                                  width: 120,
+                                  height: 120,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.1),
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: Colors.white.withOpacity(0.2),
+                                      width: 2,
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.1),
+                                        blurRadius: 32,
+                                        offset: const Offset(0, 16),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          Colors.white.withOpacity(0.2),
+                                          Colors.white.withOpacity(0.05),
+                                        ],
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                      ),
+                                    ),
+                                    child: const Icon(
+                                      Icons.savings_rounded,
+                                      size: 60,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
                           ),
-                          child: const Icon(
-                            Icons.savings_rounded,
-                            size: 60,
-                            color: Colors.white,
-                          ),
-                        ),
+                        ],
                       ),
                       const SizedBox(height: 40),
                       AnimatedTextKit(
@@ -209,7 +282,8 @@ class _LoadingScreenState extends State<LoadingScreen> with TickerProviderStateM
                 ),
               );
             },
-          ),
+            ),
+        )],
         ),
       ),
     );
