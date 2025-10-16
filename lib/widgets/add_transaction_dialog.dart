@@ -64,9 +64,9 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
                 margin: const EdgeInsets.only(top: 8),
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.green[50],
+                  color: Colors.blue[50],
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.green[200]!),
+                  border: Border.all(color: Colors.blue[200]!),
                 ),
                 child: () {
                   final amount = double.parse(_amountController.text);
@@ -74,11 +74,11 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
                   final total = amount + roundUp;
                   return Row(
                     children: [
-                      Icon(Icons.trending_up, color: Colors.green[600], size: 16),
+                      Icon(Icons.trending_up, color: Colors.blue[600], size: 16),
                       const SizedBox(width: 8),
                       Text(
                         '₹${amount.toStringAsFixed(0)} → ₹${total.toStringAsFixed(0)} (₹${roundUp.toStringAsFixed(0)} invested)',
-                        style: TextStyle(color: Colors.green[700], fontSize: 12, fontWeight: FontWeight.w500),
+                        style: TextStyle(color: Colors.blue[700], fontSize: 12, fontWeight: FontWeight.w500),
                       ),
                     ],
                   );
@@ -118,7 +118,7 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
                   child: ElevatedButton(
                     onPressed: _addTransaction,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green[600],
+                      backgroundColor: Colors.blue[600],
                       foregroundColor: Colors.white,
                     ),
                     child: const Text('Add'),
@@ -167,7 +167,7 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('₹${amount.toStringAsFixed(0)} → ₹${roundedTotal.toStringAsFixed(0)} | ₹${roundUpAmount.toStringAsFixed(0)} invested!'),
-        backgroundColor: Colors.green,
+        backgroundColor: Colors.blue,
         duration: const Duration(seconds: 3),
       ),
     );

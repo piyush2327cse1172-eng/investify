@@ -16,8 +16,8 @@ class InvestifyApp extends StatelessWidget {
       title: 'Investify',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.green,
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+        primarySwatch: Colors.blue,
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
       home: const LoadingScreen(),
@@ -92,7 +92,7 @@ class _LoadingScreenState extends State<LoadingScreen> with TickerProviderStateM
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.green[600]!, Colors.green[400]!],
+            colors: [Colors.blue[600]!, Colors.blue[400]!],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -198,7 +198,7 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.green[50]!, Colors.white],
+            colors: [Colors.blue[50]!, Colors.white],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -221,7 +221,7 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
                         Container(
                           padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
-                            color: Colors.green[600],
+                            color: Colors.blue[600],
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: const Icon(

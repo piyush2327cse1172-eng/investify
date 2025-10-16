@@ -109,7 +109,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('SMS permission granted! Auto-detection enabled.'),
-                    backgroundColor: Colors.green,
+                    backgroundColor: Colors.blue,
                   ),
                 );
               } else {
@@ -122,7 +122,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green[600],
+              backgroundColor: Colors.blue[600],
               foregroundColor: Colors.white,
             ),
             child: const Text('Grant Permission'),
@@ -139,7 +139,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('SMS data refreshed!'),
-          backgroundColor: Colors.green,
+          backgroundColor: Colors.blue,
           duration: Duration(seconds: 2),
         ),
       );
@@ -163,7 +163,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           'Investify',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        backgroundColor: Colors.green[600],
+        backgroundColor: Colors.blue[600],
         foregroundColor: Colors.white,
         elevation: 0,
         leading: Builder(
@@ -192,7 +192,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       floatingActionButton: _selectedIndex == 0
           ? FloatingActionButton(
               onPressed: _showAddTransactionDialog,
-              backgroundColor: Colors.green[600],
+              backgroundColor: Colors.blue[600],
               child: const Icon(Icons.add, color: Colors.white),
             )
           : null,
@@ -207,7 +207,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             height: 220,
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Colors.green[600]!, Colors.green[400]!],
+                colors: [Colors.blue[600]!, Colors.blue[400]!],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -221,7 +221,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     const CircleAvatar(
                       radius: 30,
                       backgroundColor: Colors.white,
-                      child: Icon(Icons.person, size: 35, color: Colors.green),
+                      child: Icon(Icons.person, size: 35, color: Colors.blue),
                     ),
                     const SizedBox(height: 15),
                     Text(
@@ -300,17 +300,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        color: isSelected ? Colors.green[50] : null,
+        color: isSelected ? Colors.blue[50] : null,
       ),
       child: ListTile(
         leading: Icon(
           icon,
-          color: isSelected ? Colors.green[600] : Colors.grey[600],
+          color: isSelected ? Colors.blue[600] : Colors.grey[600],
         ),
         title: Text(
           title,
           style: TextStyle(
-            color: isSelected ? Colors.green[600] : Colors.grey[800],
+            color: isSelected ? Colors.blue[600] : Colors.grey[800],
             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
           ),
         ),
@@ -381,14 +381,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Colors.green[600]!, Colors.green[400]!],
+                colors: [Colors.blue[600]!, Colors.blue[400]!],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.green.withOpacity(0.3),
+                  color: Colors.blue.withOpacity(0.3),
                   blurRadius: 10,
                   offset: const Offset(0, 5),
                 ),
@@ -685,7 +685,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: Colors.green,
+                        color: Colors.blue,
                       ),
                     ),
                   ],
@@ -717,17 +717,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.green[50],
+              color: Colors.blue[50],
               borderRadius: BorderRadius.circular(8),
             ),
             child: Row(
               children: [
-                Icon(Icons.lightbulb, color: Colors.green[600]),
+                Icon(Icons.lightbulb, color: Colors.blue[600]),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     'Keep investing ₹${(_totalInvestment / (_transactions.length > 0 ? _transactions.length : 1)).toStringAsFixed(0)} daily to reach ₹50,000 in 2 years!',
-                    style: TextStyle(color: Colors.green[700], fontSize: 12),
+                    style: TextStyle(color: Colors.blue[700], fontSize: 12),
                   ),
                 ),
               ],
@@ -894,13 +894,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.green[100],
+                  color: Colors.blue[100],
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
                   '${_transactions.length} transactions',
                   style: TextStyle(
-                    color: Colors.green[700],
+                    color: Colors.blue[700],
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -943,29 +943,29 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.green[50],
+                    color: Colors.blue[50],
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.green[200]!),
+                    border: Border.all(color: Colors.blue[200]!),
                   ),
                   child: Column(
                     children: [
                       Icon(
                         Icons.trending_up,
-                        color: Colors.green[600],
+                        color: Colors.blue[600],
                         size: 30,
                       ),
                       const SizedBox(height: 8),
                       Text(
                         'Total Invested',
                         style: TextStyle(
-                          color: Colors.green[600],
+                          color: Colors.blue[600],
                           fontSize: 12,
                         ),
                       ),
                       Text(
                         '₹${_totalInvestment.toStringAsFixed(0)}',
                         style: TextStyle(
-                          color: Colors.green[600],
+                          color: Colors.blue[600],
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
@@ -1167,7 +1167,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   icon: const Icon(Icons.auto_awesome),
                   label: const Text('Auto Invest'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.purple[600],
+                    backgroundColor: Colors.blue[600],
                     foregroundColor: Colors.white,
                   ),
                 ),
@@ -1445,7 +1445,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text('Auto-investment enabled!'),
-                  backgroundColor: Colors.green,
+                  backgroundColor: Colors.blue,
                 ),
               );
             },
@@ -1610,7 +1610,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Colors.green[600]!, Colors.green[400]!],
+          colors: [Colors.blue[600]!, Colors.blue[400]!],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -1887,7 +1887,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('Budget updated successfully!'),
-                    backgroundColor: Colors.green,
+                    backgroundColor: Colors.blue,
                   ),
                 );
               } else {
@@ -1983,7 +1983,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     'Investment Milestone!',
                     'Congratulations! You\'ve invested ₹${_totalInvestment.toStringAsFixed(0)} through round-ups.',
                     Icons.celebration,
-                    Colors.green,
+                    Colors.blue,
                     '2 hours ago',
                   ),
                   _buildNotificationItem(
@@ -2148,7 +2148,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               icon: const Icon(Icons.refresh),
               label: const Text('Refresh SMS Detection'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green[600],
+                backgroundColor: Colors.blue[600],
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.all(16),
               ),
