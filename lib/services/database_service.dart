@@ -48,7 +48,7 @@ class DatabaseService {
     return maps.map((map) => model.Transaction.fromMap(map)).toList();
   }
 
-  static Future<double> getTotalInvestment() async {
+  static Future<double> getTotalSavings() async {
     final db = await database;
     final result = await db.rawQuery('SELECT SUM(roundUpAmount) as total FROM transactions');
     return result.first['total'] as double? ?? 0.0;

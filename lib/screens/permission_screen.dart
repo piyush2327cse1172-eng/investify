@@ -53,7 +53,7 @@ class _PermissionScreenState extends State<PermissionScreen> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'To automatically detect your transactions and create smart investments, we need permission to read SMS messages from your bank.',
+                  'To automatically detect your transactions and create smart savings, we need permission to read SMS messages from your bank.',
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.grey[600],
@@ -84,8 +84,8 @@ class _PermissionScreenState extends State<PermissionScreen> {
                       const SizedBox(height: 16),
                       _buildFeatureItem(
                         Icons.auto_awesome,
-                        'Auto Investment',
-                        'Automatic round-up investments',
+                        'Auto Savings',
+                        'Automatic round-up savings',
                       ),
                       const SizedBox(height: 16),
                       _buildFeatureItem(

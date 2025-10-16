@@ -1,4 +1,4 @@
-class InvestmentOption {
+class SavingsOption {
   final String name;
   final String description;
   final double expectedReturn;
@@ -7,7 +7,7 @@ class InvestmentOption {
   final double minAmount;
   final String category;
 
-  InvestmentOption({
+  SavingsOption({
     required this.name,
     required this.description,
     required this.expectedReturn,

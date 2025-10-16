@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../models/transaction.dart';
 import '../services/database_service.dart';
-import '../services/investment_service.dart';
+import '../services/savings_service.dart';
 import '../services/sms_service.dart';
 import '../widgets/transaction_card.dart';
 import '../widgets/add_transaction_dialog.dart';
@@ -21,7 +21,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   String _monthlyBudget = '0';
   int _selectedIndex = 0;
   List<Transaction> _transactions = [];
-  double _totalInvestment = 0.0;
+  double _totalSavings = 0.0;
   double _totalExpenditure = 0.0;
   late AnimationController _animationController;
 
@@ -54,12 +54,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   Future<void> _loadTransactions() async {
     final transactions = await DatabaseService.getTransactions();
-    final investment = await DatabaseService.getTotalInvestment();
+    final savings = await DatabaseService.getTotalSavings();
     final expenditure = await DatabaseService.getTotalExpenditure();
 
     setState(() {
       _transactions = transactions;
-      _totalInvestment = investment;
+      _totalSavings = savings;
       _totalExpenditure = expenditure;
     });
   }
@@ -89,7 +89,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       builder: (context) => AlertDialog(
         title: const Text('SMS Permission Required'),
         content: const Text(
-          'Investify needs SMS permission to automatically detect your transactions and create smart round-up investments. This helps you save money effortlessly!',
+          'Investify needs SMS permission to automatically detect your transactions and create smart round-up savings. This helps you save money effortlessly!',
         ),
         actions: [
           TextButton(
@@ -276,7 +276,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 _buildDrawerItem(Icons.home, 'Home', 0),
                 _buildDrawerItem(Icons.dashboard, 'Dashboard', 1),
                 _buildDrawerItem(Icons.money, 'Expenses', 2),
-                _buildDrawerItem(Icons.trending_up, 'Invest', 3),
+                _buildDrawerItem(Icons.trending_up, 'Save', 3),
                 _buildDrawerItem(Icons.sms, 'SMS Auto-Detect', 6),
                 _buildDrawerItem(Icons.info, 'About', 4),
                 _buildDrawerItem(Icons.contact_mail, 'Contact', 5),
@@ -339,7 +339,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       case 2:
         return _buildExpenseManagement();
       case 3:
-        return _buildInvestPage();
+        return _buildSavingsPage();
       case 4:
         return _buildAboutUs();
       case 5:
@@ -464,8 +464,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         const SizedBox(width: 16),
         Expanded(
           child: _buildStatCard(
-            'Investment',
-            '₹${_totalInvestment.toStringAsFixed(0)}',
+            'Savings',
+            '₹${_totalSavings.toStringAsFixed(0)}',
             Icons.trending_up,
             Colors.green,
           ),
@@ -577,7 +577,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           const SizedBox(height: 20),
           _buildBudgetTracker(),
           const SizedBox(height: 20),
-          _buildInvestmentGrowth(),
+          _buildSavingsGrowth(),
           const SizedBox(height: 20),
           _buildCategoryBreakdown(),
           const SizedBox(height: 20),
@@ -648,7 +648,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildInvestmentGrowth() {
+  Widget _buildSavingsGrowth() {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -666,7 +666,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'Investment Growth',
+            'Savings Growth',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
@@ -683,7 +683,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     const SizedBox(height: 8),
                     Text('Current', style: TextStyle(color: Colors.grey[600])),
                     Text(
-                      '₹${_totalInvestment.toStringAsFixed(0)}',
+                      '₹${_totalSavings.toStringAsFixed(0)}',
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -703,7 +703,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       style: TextStyle(color: Colors.grey[600]),
                     ),
                     Text(
-                      '₹${(_totalInvestment * 1.12).toStringAsFixed(0)}',
+                      '₹${(_totalSavings * 1.12).toStringAsFixed(0)}',
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -728,7 +728,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'Keep investing ₹${(_totalInvestment / (_transactions.length > 0 ? _transactions.length : 1)).toStringAsFixed(0)} daily to reach ₹50,000 in 2 years!',
+                    'Keep saving ₹${(_totalSavings / (_transactions.length > 0 ? _transactions.length : 1)).toStringAsFixed(0)} daily to reach ₹50,000 in 2 years!',
                     style: TextStyle(color: Colors.blue[700], fontSize: 12),
                   ),
                 ),
@@ -839,9 +839,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Widget _buildSavingsGoal() {
-    final monthlyInvestment = _totalInvestment;
+    final monthlySavings = _totalSavings;
     final goalAmount = 100000.0;
-    final progress = (monthlyInvestment / goalAmount * 100).clamp(0, 100);
+    final progress = (monthlySavings / goalAmount * 100).clamp(0, 100);
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -877,7 +877,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
           const SizedBox(height: 8),
           Text(
-            '₹${(goalAmount - monthlyInvestment).toStringAsFixed(0)} to go!',
+            '₹${(goalAmount - monthlySavings).toStringAsFixed(0)} to go!',
             style: const TextStyle(color: Colors.white70),
           ),
         ],
@@ -983,14 +983,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Total Invested',
+                        'Total Saved',
                         style: TextStyle(
                           color: Colors.blue[600],
                           fontSize: 12,
                         ),
                       ),
                       Text(
-                        '₹${_totalInvestment.toStringAsFixed(0)}',
+                        '₹${_totalSavings.toStringAsFixed(0)}',
                         style: TextStyle(
                           color: Colors.blue[600],
                           fontSize: 18,
@@ -1043,30 +1043,30 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildInvestPage() {
+  Widget _buildSavingsPage() {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'AI Investment Assistant',
+            'AI Savings Assistant',
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 20),
-          _buildInvestmentSummary(),
+          _buildSavingsSummary(),
           const SizedBox(height: 20),
           _buildAIRecommendations(),
           const SizedBox(height: 20),
-          _buildInvestmentOptions(),
+          _buildSavingsOptions(),
           const SizedBox(height: 20),
-          _buildInvestmentSimulator(),
+          _buildSavingsSimulator(),
         ],
       ),
     );
   }
 
-  Widget _buildInvestmentSummary() {
+  Widget _buildSavingsSummary() {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -1081,7 +1081,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'Your Investment Portfolio',
+            'Your Savings Portfolio',
             style: TextStyle(
               color: Colors.white,
               fontSize: 18,
@@ -1096,11 +1096,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'Total Invested',
+                      'Total Saved',
                       style: TextStyle(color: Colors.white70),
                     ),
                     Text(
-                      '₹${_totalInvestment.toStringAsFixed(0)}',
+                      '₹${_totalSavings.toStringAsFixed(0)}',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 24,
@@ -1119,7 +1119,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       style: TextStyle(color: Colors.white70),
                     ),
                     Text(
-                      '₹${(_totalInvestment * 0.12).toStringAsFixed(0)}',
+                      '₹${(_totalSavings * 0.12).toStringAsFixed(0)}',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 24,
@@ -1137,13 +1137,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Widget _buildAIRecommendations() {
-    final monthlyInvestment =
-        _totalInvestment /
+    final monthlySavings =
+        _totalSavings /
         (_transactions.length > 0 ? _transactions.length : 1) *
         30;
-    final advice = InvestmentService.getInvestmentAdvice(
+    final advice = SavingsService.getSavingsAdvice(
       'beginner',
-      monthlyInvestment,
+      monthlySavings,
     );
 
     return Container(
@@ -1190,9 +1190,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             children: [
               Expanded(
                 child: ElevatedButton.icon(
-                  onPressed: () => _showInvestmentDialog(),
+                  onPressed: () => _showSavingsDialog(),
                   icon: const Icon(Icons.auto_awesome),
-                  label: const Text('Auto Invest'),
+                  label: const Text('Auto Save'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue[600],
                     foregroundColor: Colors.white,
@@ -1202,7 +1202,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               const SizedBox(width: 12),
               Expanded(
                 child: OutlinedButton.icon(
-                  onPressed: () => _showInvestmentCalculator(),
+                  onPressed: () => _showSavingsCalculator(),
                   icon: const Icon(Icons.calculate),
                   label: const Text('Calculator'),
                 ),
@@ -1214,8 +1214,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildInvestmentOptions() {
-    final options = InvestmentService.getInvestmentOptions('beginner');
+  Widget _buildSavingsOptions() {
+    final options = SavingsService.getSavingsOptions('beginner');
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1353,7 +1353,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildInvestmentSimulator() {
+  Widget _buildSavingsSimulator() {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -1371,12 +1371,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'Investment Simulator',
+            'Savings Simulator',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
           const Text(
-            'If you invest ₹1000/month for 5 years:',
+            'If you save ₹1000/month for 5 years:',
             style: TextStyle(fontSize: 14),
           ),
           const SizedBox(height: 12),
@@ -1392,7 +1392,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   child: Column(
                     children: [
                       const Text(
-                        'Total Invested',
+                        'Total Saved',
                         style: TextStyle(fontSize: 12),
                       ),
                       Text(
@@ -1455,12 +1455,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     }
   }
 
-  void _showInvestmentDialog() {
+  void _showSavingsDialog() {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Auto Investment'),
-        content: const Text('Enable auto-investment of round-up amounts?'),
+        title: const Text('Auto Savings'),
+        content: const Text('Enable auto-savings of round-up amounts?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -1471,7 +1471,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('Auto-investment enabled!'),
+                  content: Text('Auto-savings enabled!'),
                   backgroundColor: Colors.blue,
                 ),
               );
@@ -1483,15 +1483,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  void _showInvestmentCalculator() {
+  void _showSavingsCalculator() {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Investment Calculator'),
+        title: const Text('Savings Calculator'),
         content: const Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Calculate potential returns:'),
+            Text('Calculate potential savings returns:'),
             SizedBox(height: 16),
             Text('₹1000/month × 12% return × 5 years = ₹82,000'),
           ],
@@ -1526,7 +1526,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           const SizedBox(height: 16),
           _buildFeatureCard(
             'Our Solution',
-            'We make every rupee work harder—automatically, intelligently, and in real-time through smart round-ups and AI-powered investment suggestions.',
+            'We make every rupee work harder—automatically, intelligently, and in real-time through smart round-ups and AI-powered savings suggestions.',
             Icons.lightbulb_outline,
             Colors.orange,
           ),
@@ -1545,7 +1545,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           const SizedBox(height: 12),
           _buildFeatureCard(
             '2. Real-Time Notifications',
-            'Instant alerts for transactions with smart category suggestions and investment confirmations.',
+            'Instant alerts for transactions with smart category suggestions and savings confirmations.',
             Icons.notifications_active,
             Colors.green,
           ),
@@ -1559,13 +1559,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           const SizedBox(height: 12),
           _buildFeatureCard(
             '4. AI Financial Assistant',
-            'Personalized investment suggestions based on your risk profile, spending habits, and goals.',
+            'Personalized savings suggestions based on your risk profile, spending habits, and goals.',
             Icons.psychology,
             Colors.indigo,
           ),
           const SizedBox(height: 12),
           _buildFeatureCard(
-            '5. Investment Simulation',
+            '5. Savings Simulation',
             'Track portfolio growth and get milestone alerts. "Your ₹6 today could be ₹50 in 6 months!"',
             Icons.trending_up,
             Colors.teal,
@@ -1663,7 +1663,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             '• Technical Feasibility: SMS parsing, UPI integration available',
           ),
           _buildImpactPoint(
-            '• Revenue Model: Commission from investment platforms',
+            '• Revenue Model: Commission from savings platforms',
           ),
           _buildImpactPoint(
             '• Scalability: Cloud-based architecture supports millions',
@@ -1676,7 +1676,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               borderRadius: BorderRadius.circular(8),
             ),
             child: const Text(
-              'Mission: Turn every Indian\'s daily spending into wealth-building opportunities through micro-investments.',
+              'Mission: Turn every Indian\'s daily spending into wealth-building opportunities through micro-savings.',
               style: TextStyle(
                 color: Colors.white,
                 fontStyle: FontStyle.italic,
@@ -1732,7 +1732,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ),
                 SizedBox(height: 8),
                 Text(
-                  'We\'re here to help you with your investment journey!',
+                  'We\'re here to help you with your savings journey!',
                   style: TextStyle(color: Colors.white70),
                 ),
               ],
@@ -1773,16 +1773,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
           const SizedBox(height: 12),
           _buildFAQItem(
-            'How does round-up investment work?',
+            'How does round-up savings work?',
             'When you spend ₹24, we round it up to ₹25 and invest the ₹1 difference automatically.',
           ),
           _buildFAQItem(
             'Is my money safe?',
-            'Yes! We use bank-grade security and are regulated by SEBI. Your investments are protected.',
+            'Yes! We use bank-grade security and are regulated by SEBI. Your savings are protected.',
           ),
           _buildFAQItem(
-            'Can I withdraw my investments?',
-            'Yes, you can withdraw your investments anytime. Some funds may have exit loads.',
+            'Can I withdraw my savings?',
+            'Yes, you can withdraw your savings anytime. Some funds may have exit loads.',
           ),
           _buildFAQItem(
             'What are the charges?',
@@ -1943,7 +1943,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       builder: (context) => AlertDialog(
         title: const Text('Reset All Transactions'),
         content: const Text(
-          'This will delete all transactions and reset your investment data. This action cannot be undone.',
+          'This will delete all transactions and reset your savings data. This action cannot be undone.',
         ),
         actions: [
           TextButton(
@@ -2007,8 +2007,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 children: [
                   _buildNotificationItem(
-                    'Investment Milestone!',
-                    'Congratulations! You\'ve invested ₹${_totalInvestment.toStringAsFixed(0)} through round-ups.',
+                    'Savings Milestone!',
+                    'Congratulations! You\'ve saved ₹${_totalSavings.toStringAsFixed(0)} through round-ups.',
                     Icons.celebration,
                     Colors.blue,
                     '2 hours ago',
@@ -2140,7 +2140,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ),
                 SizedBox(height: 8),
                 Text(
-                  'We automatically read your SMS messages to detect UPI and bank transactions, then create investment round-ups.',
+                  'We automatically read your SMS messages to detect UPI and bank transactions, then create savings round-ups.',
                   style: TextStyle(color: Colors.white70),
                 ),
               ],

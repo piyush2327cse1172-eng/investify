@@ -1,36 +1,36 @@
-import '../models/investment_option.dart';
+import '../models/savings_option.dart';
 
-class InvestmentService {
-  static List<InvestmentOption> getInvestmentOptions(String riskProfile) {
+class SavingsService {
+  static List<SavingsOption> getSavingsOptions(String riskProfile) {
     final allOptions = [
-      InvestmentOption(
+      SavingsOption(
         name: 'SIP Mutual Fund',
-        description: 'Systematic Investment Plan in diversified equity funds',
+        description: 'Systematic Savings Plan in diversified equity funds',
         expectedReturn: 12.0,
         riskLevel: 'Moderate',
         timeframe: '3-5 years',
         minAmount: 500,
         category: 'Mutual Fund',
       ),
-      InvestmentOption(
+      SavingsOption(
         name: 'Gold ETF',
-        description: 'Digital gold investment for portfolio diversification',
+        description: 'Digital gold savings for portfolio diversification',
         expectedReturn: 8.0,
         riskLevel: 'Low',
         timeframe: '1-3 years',
         minAmount: 100,
         category: 'Commodity',
       ),
-      InvestmentOption(
+      SavingsOption(
         name: 'Index Fund',
-        description: 'Low-cost investment tracking market indices',
+        description: 'Low-cost savings tracking market indices',
         expectedReturn: 10.0,
         riskLevel: 'Moderate',
         timeframe: '5+ years',
         minAmount: 1000,
         category: 'Index Fund',
       ),
-      InvestmentOption(
+      SavingsOption(
         name: 'Liquid Fund',
         description: 'Short-term debt fund for emergency corpus',
         expectedReturn: 4.0,
@@ -60,7 +60,7 @@ class InvestmentService {
     return amount * (1 + (rate / 100)) * (months / 12);
   }
 
-  static String getInvestmentAdvice(String riskProfile, double monthlyAmount) {
+  static String getSavingsAdvice(String riskProfile, double monthlyAmount) {
     if (monthlyAmount < 500) {
       return "Start with ₹500/month in Liquid Fund to build emergency corpus first.";
     } else if (monthlyAmount < 2000) {

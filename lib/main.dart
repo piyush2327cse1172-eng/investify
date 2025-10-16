@@ -137,7 +137,7 @@ class _LoadingScreenState extends State<LoadingScreen> with TickerProviderStateM
                       ),
                       const SizedBox(height: 10),
                       const Text(
-                        'Smart Micro Investments',
+                        'Smart Micro Savings',
                         style: TextStyle(
                           fontSize: 16,
                           color: Colors.white70,
@@ -241,7 +241,7 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
                         ),
                         const SizedBox(height: 10),
                         Text(
-                          'Turn your daily spending into smart investments',
+                          'Turn your daily spending into smart savings',
                           style: TextStyle(
                             fontSize: 16,
                             color: Colors.grey[600],
@@ -469,7 +469,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 _buildTextField(_bankController, 'Primary Bank Name', Icons.account_balance),
               ]),
               const SizedBox(height: 20),
-              _buildSection('Investment Profile', [
+              _buildSection('Savings Profile', [
                 _buildTextField(_budgetController, 'Monthly Budget (₹)', Icons.currency_rupee, TextInputType.number),
                 _buildDropdown(),
               ]),
@@ -542,7 +542,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     return DropdownButtonFormField<String>(
       value: _experience,
       decoration: InputDecoration(
-        labelText: 'Investment Experience',
+        labelText: 'Savings Experience',
         prefixIcon: const Icon(Icons.trending_up),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
       ),
